@@ -65,7 +65,8 @@ fun InputTextField(
         trailingIcon = trailingIcon,
         visualTransformation =
             if (keyboardType == KeyboardType.Password) PasswordVisualTransformation()
-            else VisualTransformation.None
+            else VisualTransformation.None,
+        singleLine = true
     )
 }
 
