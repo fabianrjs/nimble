@@ -15,4 +15,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "nimble"
 include(":app")
- 
+include(":ui_components")

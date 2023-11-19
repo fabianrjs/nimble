@@ -19,6 +19,7 @@ fun NimbleNavHost(
     NavHost(navController = navController, startDestination = NimbleRoutes.SplashScreenRoute.route) {
         composable(route = NimbleRoutes.SplashScreenRoute.route) {
             SplashScreen {
+                navController.popBackStack(NimbleRoutes.SplashScreenRoute.route, true)
                 navController.navigate(NimbleRoutes.LogInScreenRoute.route)
             }
         }
