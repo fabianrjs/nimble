@@ -36,6 +36,7 @@ fun InputTextField(
     placeholderText: String,
     imeAction: ImeAction = ImeAction.Next,
     keyboardType: KeyboardType,
+    enabled: Boolean = true,
     trailingIcon: @Composable () -> Unit = {}
 ) {
 
@@ -66,7 +67,8 @@ fun InputTextField(
         visualTransformation =
             if (keyboardType == KeyboardType.Password) PasswordVisualTransformation()
             else VisualTransformation.None,
-        singleLine = true
+        singleLine = true,
+        enabled = enabled
     )
 }
 
