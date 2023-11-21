@@ -1,4 +1,4 @@
-package com.example.nimble.ui
+package com.example.nimble.ui.login
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -9,8 +9,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -24,21 +24,43 @@ import com.example.ui_components.NimbleBackgroundImage
 import com.example.ui_components.NimbleButton
 
 @Composable
-fun LogInScreen() {
+fun LogInScreen(
+    authViewModel: AuthViewModel
+) {
+    val emailValue = authViewModel.emailValue.collectAsState()
+    val passwordValue = authViewModel.passwordValue.collectAsState()
+    val loginRequestState = authViewModel.loginRequestState.collectAsState()
+
+
+
     Box(modifier = Modifier.fillMaxSize()) {
         NimbleBackgroundImage(pixelated = true)
-        LogInForm()
+        LogInForm(
+            emailValue = emailValue,
+            passwordValue = passwordValue,
+            loginRequestState = loginRequestState,
+            onEmailValueChange = authViewModel::onEmailValueChange,
+            onPasswordValueChange = authViewModel::onPasswordValueChange,
+            onLoginButtonClick = authViewModel::login,
+        )
     }
 }
 
 @Composable
-private fun LogInForm() {
+private fun LogInForm(
+    emailValue: State<String>,
+    passwordValue: State<String>,
+    loginRequestState: State<LoginRequestState?>,
+    onEmailValueChange: (String) -> Unit,
+    onPasswordValueChange: (String) -> Unit,
+    onLoginButtonClick: () -> Unit
+) {
     ConstraintLayout(
         modifier = Modifier.fillMaxSize()
     ) {
-        val (nimbleLogo, emailInput, passwordInput, logInButton) = createRefs()
-        val emailValue = remember { mutableStateOf("") }
-        val passwordValue = remember { mutableStateOf("") }
+        val (nimbleLogo, emailInput, passwordInput, logInButton, errorMessage) = createRefs()
+        val isRequestLoading = loginRequestState.value is LoginRequestState.Loading
+        val formEnabled = isRequestLoading.not()
 
         Image(
             modifier = Modifier
@@ -46,7 +68,8 @@ private fun LogInForm() {
                     top.linkTo(parent.top, margin = 50.dp)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-                }.padding(vertical = 109.dp),
+                }
+                .padding(vertical = 109.dp),
             painter = painterResource(id = R.drawable.nimble_logo),
             contentDescription = "Nimble Logo"
         )
@@ -57,13 +80,13 @@ private fun LogInForm() {
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                     top.linkTo(nimbleLogo.bottom)
-                }.padding(horizontal = 24.dp),
+                }
+                .padding(horizontal = 24.dp),
             value = emailValue,
-            onValueChange = { newValue ->
-                emailValue.value = newValue
-            },
+            onValueChange = onEmailValueChange,
             placeholderText = "Email",
             keyboardType = KeyboardType.Email,
+            enabled = formEnabled
         )
 
         InputTextField(
@@ -72,11 +95,10 @@ private fun LogInForm() {
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                     top.linkTo(emailInput.bottom)
-                }.padding(horizontal = 24.dp, vertical = 20.dp),
+                }
+                .padding(horizontal = 24.dp, vertical = 20.dp),
             value = passwordValue,
-            onValueChange = { newValue ->
-                passwordValue.value = newValue
-            },
+            onValueChange = onPasswordValueChange,
             placeholderText = "Password",
             keyboardType = KeyboardType.Password,
             imeAction = ImeAction.Done,
@@ -88,7 +110,8 @@ private fun LogInForm() {
                     text = "Forgot?",
                     color = Color.White.copy(alpha = 0.5f)
                 )
-            }
+            },
+            enabled = formEnabled
         )
 
         NimbleButton(
@@ -97,11 +120,25 @@ private fun LogInForm() {
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                     top.linkTo(passwordInput.bottom)
-                }.fillMaxWidth()
+                }
+                .fillMaxWidth()
                 .padding(horizontal = 24.dp)
                 .height(56.dp),
             textButton = "Log In",
-            onClick = { /* TODO */ }
+            onClick = onLoginButtonClick,
+            isLoading = isRequestLoading
         )
+
+        if (loginRequestState.value is LoginRequestState.Error) {
+            Text(
+                modifier = Modifier.constrainAs(errorMessage) {
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    top.linkTo(logInButton.bottom, 20.dp)
+                },
+                text = "An error occurred. Try again",
+                color = Color.Red
+            )
+        }
     }
 }
