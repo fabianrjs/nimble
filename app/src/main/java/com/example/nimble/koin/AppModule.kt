@@ -11,5 +11,5 @@ val appModule = module {
     viewModel { parameters ->
         UserViewModel(parameters.get(), get())
     }
-    viewModel { HomeViewModel() }
+    viewModel { HomeViewModel(get()) }
 }
