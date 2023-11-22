@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
 sealed class UserRequestState {
-    class Success(val user: User) : UserRequestState()
+    object Success : UserRequestState()
     object Loading : UserRequestState()
     object Error : UserRequestState()
 }
@@ -27,6 +27,9 @@ class UserViewModel(
 
     private val _userInfoState = MutableStateFlow<UserRequestState?>(null)
     val userInfoState = _userInfoState.asStateFlow()
+
+    private val _userInfo = MutableStateFlow<User?>(null)
+    val userInfo = _userInfo.asStateFlow()
 
     init {
         getUserInfo()
@@ -41,12 +44,13 @@ class UserViewModel(
                 .collect { response ->
                     if (response.isSuccessful) {
                         response.body()?.userData?.let {
-                            _userInfoState.value = UserRequestState.Success(User(
+                            _userInfoState.value = UserRequestState.Success
+                            _userInfo.value = User(
                                 id = it.id,
                                 email = it.attributes.email,
                                 name = it.attributes.name,
                                 avatarUrl = it.attributes.avatarUrl
-                            ))
+                            )
                         }
                     } else {
                         handleLoginRequestError()
