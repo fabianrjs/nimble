@@ -2,9 +2,8 @@ package com.example.nimble.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.nimble.model.RequestState
 import com.example.nimble.model.User
-import com.example.nimble.model.UserToken
-import com.example.nimble.model.getAuthorization
 import com.example.nimble.network.repositories.UserRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,18 +13,12 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
-sealed class UserRequestState {
-    object Success : UserRequestState()
-    object Loading : UserRequestState()
-    object Error : UserRequestState()
-}
-
 class UserViewModel(
-    val userAuthToken: UserToken,
+    private val authorization: String,
     private val userRepository: UserRepository
 ) : ViewModel() {
 
-    private val _userInfoState = MutableStateFlow<UserRequestState?>(null)
+    private val _userInfoState = MutableStateFlow<RequestState?>(null)
     val userInfoState = _userInfoState.asStateFlow()
 
     private val _userInfo = MutableStateFlow<User?>(null)
@@ -37,14 +30,14 @@ class UserViewModel(
 
     private fun getUserInfo() {
         viewModelScope.launch {
-            userRepository.getUserInfo(userAuthToken.getAuthorization())
+            userRepository.getUserInfo(authorization)
                 .flowOn(Dispatchers.IO)
-                .onStart { _userInfoState.value = UserRequestState.Loading }
+                .onStart { _userInfoState.value = RequestState.Loading }
                 .catch { handleLoginRequestError() }
                 .collect { response ->
                     if (response.isSuccessful) {
                         response.body()?.userData?.let {
-                            _userInfoState.value = UserRequestState.Success
+                            _userInfoState.value = RequestState.Success
                             _userInfo.value = User(
                                 id = it.id,
                                 email = it.attributes.email,
@@ -60,6 +53,6 @@ class UserViewModel(
     }
 
     private fun handleLoginRequestError() {
-        _userInfoState.value = UserRequestState.Error
+        _userInfoState.value = RequestState.Error
     }
 }

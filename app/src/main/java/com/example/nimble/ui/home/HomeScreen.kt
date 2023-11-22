@@ -35,22 +35,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import coil.compose.AsyncImage
 import com.example.nimble.R
+import com.example.nimble.model.RequestState
 import com.example.nimble.model.Survey
-import com.example.nimble.model.UserToken
 import com.example.ui_components.LoadingComponentCircle
 import com.example.ui_components.LoadingComponentRectangle
-import org.koin.androidx.compose.koinViewModel
-import org.koin.core.context.GlobalContext
 
 @Composable
 fun HomeScreen(
-    homeViewModel: HomeViewModel = koinViewModel(),
+    homeViewModel: HomeViewModel,
     userViewModel: UserViewModel
 ) {
     val surveys = homeViewModel.surveys.collectAsState()
@@ -60,12 +57,9 @@ fun HomeScreen(
 
     val isLoading = remember { mutableStateOf(true)}
 
-    if(surveys.value.isNullOrEmpty() && surveysState.value == null)
-        homeViewModel.getSurveys(userViewModel.userAuthToken)
-
     LaunchedEffect(key1 = userInfoState.value, surveysState.value) {
         isLoading.value =
-            userInfoState.value is UserRequestState.Loading || surveysState.value is SurveysRequestState.Loading
+            userInfoState.value is RequestState.Loading || surveysState.value is RequestState.Loading
     }
 
     Box(
@@ -302,17 +296,4 @@ fun DayInformationAndUserAvatarSection(
             )
         }
     }
-}
-
-@Preview
-@Composable
-fun PreviewSurveys() {
-    HomeScreen(userViewModel = UserViewModel(UserToken(
-        id = "123456",
-        accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9",
-        tokenType = "Bearer",
-        expiresIn = 3600,
-        refreshToken = "abcdefgh",
-        createdAt = System.currentTimeMillis()
-    ), GlobalContext.get().get()))
 }

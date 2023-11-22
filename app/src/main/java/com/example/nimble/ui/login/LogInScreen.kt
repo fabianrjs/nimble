@@ -19,6 +19,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.nimble.R
+import com.example.nimble.model.RequestState
 import com.example.ui_components.InputTextField
 import com.example.ui_components.NimbleBackgroundImage
 import com.example.ui_components.NimbleButton
@@ -30,8 +31,6 @@ fun LogInScreen(
     val emailValue = authViewModel.emailValue.collectAsState()
     val passwordValue = authViewModel.passwordValue.collectAsState()
     val loginRequestState = authViewModel.loginRequestState.collectAsState()
-
-
 
     Box(modifier = Modifier.fillMaxSize()) {
         NimbleBackgroundImage(pixelated = true)
@@ -50,7 +49,7 @@ fun LogInScreen(
 private fun LogInForm(
     emailValue: State<String>,
     passwordValue: State<String>,
-    loginRequestState: State<LoginRequestState?>,
+    loginRequestState: State<RequestState?>,
     onEmailValueChange: (String) -> Unit,
     onPasswordValueChange: (String) -> Unit,
     onLoginButtonClick: () -> Unit
@@ -59,7 +58,7 @@ private fun LogInForm(
         modifier = Modifier.fillMaxSize()
     ) {
         val (nimbleLogo, emailInput, passwordInput, logInButton, errorMessage) = createRefs()
-        val isRequestLoading = loginRequestState.value is LoginRequestState.Loading
+        val isRequestLoading = loginRequestState.value is RequestState.Loading
         val formEnabled = isRequestLoading.not()
 
         Image(
@@ -129,7 +128,7 @@ private fun LogInForm(
             isLoading = isRequestLoading
         )
 
-        if (loginRequestState.value is LoginRequestState.Error) {
+        if (loginRequestState.value is RequestState.Error) {
             Text(
                 modifier = Modifier.constrainAs(errorMessage) {
                     start.linkTo(parent.start)
