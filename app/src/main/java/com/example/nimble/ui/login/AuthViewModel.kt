@@ -105,4 +105,20 @@ class AuthViewModel(
         _loginRequestState.value = RequestState.Error
     }
 
+    fun logout() {
+        viewModelScope.launch {
+            authRepository.logout(_userToken.value!!.accessToken)
+            authStorageRepository.deleteUserAccessToken()
+            clearVariables()
+        }
+    }
+
+    private fun clearVariables() {
+        _userToken.value = null
+        _accessToken.value = null
+        _loginRequestState.value = null
+        _emailValue.value = ""
+        _passwordValue.value = ""
+    }
+
 }

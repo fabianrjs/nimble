@@ -11,13 +11,17 @@ import com.example.nimble.ui.login.LogInScreen
 import com.example.nimble.ui.SplashScreen
 import com.example.nimble.ui.home.HomeScreen
 import com.example.nimble.ui.login.AuthViewModel
+import com.example.nimble.ui.login.LogOutScreen
+import com.example.nimble.ui.survey.SurveyDetailScreen
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 sealed class NimbleRoutes(val route: String) {
-    object SplashScreenRoute : NimbleRoutes("SplashScreen")
-    object LogInScreenRoute : NimbleRoutes("LogInScreen")
+    object SplashScreen : NimbleRoutes("SplashScreen")
+    object LogInScreen : NimbleRoutes("LogInScreen")
     object HomeScreen : NimbleRoutes("HomeScreen")
+    object SurveyDetailScreen : NimbleRoutes("SurveyDetailScreen")
+    object LogOutScreen : NimbleRoutes("LogOutScreen")
 }
 
 @Composable
@@ -30,19 +34,28 @@ fun NimbleNavHost(
 
     LaunchedEffect(accessToken.value) {
         if (accessToken.value.isNullOrEmpty().not()) {
-            navController.popBackStack(NimbleRoutes.SplashScreenRoute.route, true)
+            if (navController.currentDestination?.route == NimbleRoutes.LogInScreen.route) {
+                navController.popBackStack(NimbleRoutes.LogInScreen.route, true)
+            }
+            else {
+                navController.popBackStack(NimbleRoutes.SplashScreen.route, true)
+            }
             navController.navigate(NimbleRoutes.HomeScreen.route)
+        }
+        else if (navController.currentDestination?.route == NimbleRoutes.LogOutScreen.route) {
+            navController.popBackStack(NimbleRoutes.HomeScreen.route, true)
+            navController.navigate(NimbleRoutes.LogInScreen.route)
         }
     }
 
-    NavHost(navController = navController, startDestination = NimbleRoutes.SplashScreenRoute.route) {
-        composable(route = NimbleRoutes.SplashScreenRoute.route) {
+    NavHost(navController = navController, startDestination = NimbleRoutes.SplashScreen.route) {
+        composable(route = NimbleRoutes.SplashScreen.route) {
             SplashScreen {
-                navController.popBackStack(NimbleRoutes.SplashScreenRoute.route, true)
-                navController.navigate(NimbleRoutes.LogInScreenRoute.route)
+                navController.popBackStack(NimbleRoutes.SplashScreen.route, true)
+                navController.navigate(NimbleRoutes.LogInScreen.route)
             }
         }
-        composable(route = NimbleRoutes.LogInScreenRoute.route) { LogInScreen(authViewModel) }
+        composable(route = NimbleRoutes.LogInScreen.route) { LogInScreen(authViewModel) }
         composable(route = NimbleRoutes.HomeScreen.route) {
             HomeScreen(
                 userViewModel = koinViewModel(parameters = {
@@ -51,7 +64,10 @@ fun NimbleNavHost(
                 homeViewModel = koinViewModel(parameters = {
                     parametersOf(userToken.value?.getAuthorization() ?: "")
                 }),
+                navController = navController
             )
         }
+        composable(route = NimbleRoutes.SurveyDetailScreen.route) { SurveyDetailScreen() }
+        composable(route = NimbleRoutes.LogOutScreen.route) { LogOutScreen(authViewModel) }
     }
 }

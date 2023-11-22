@@ -16,4 +16,10 @@ class AuthStorageRepository(private val context: Context) {
             preferences[USER_TOKEN_KEY] = token
         }
     }
+
+    suspend fun deleteUserAccessToken() {
+        context.dataStore.edit { preferences ->
+            preferences.remove(USER_TOKEN_KEY)
+        }
+    }
 }

@@ -2,6 +2,7 @@ package com.example.nimble.ui.home
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,7 +39,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.example.nimble.NimbleRoutes
 import com.example.nimble.R
 import com.example.nimble.model.RequestState
 import com.example.nimble.model.Survey
@@ -48,7 +51,8 @@ import com.example.ui_components.LoadingComponentRectangle
 @Composable
 fun HomeScreen(
     homeViewModel: HomeViewModel,
-    userViewModel: UserViewModel
+    userViewModel: UserViewModel,
+    navController: NavController
 ) {
     val surveys = homeViewModel.surveys.collectAsState()
     val userInfo = userViewModel.userInfo.collectAsState()
@@ -68,11 +72,13 @@ fun HomeScreen(
     ) {
         SurveysPager(
             surveys = surveys,
-            isLoading = isLoading.value
+            isLoading = isLoading.value,
+            navController = navController
         )
         DayInformationAndUserAvatarSection(
             userAvatarUrl = userInfo.value?.avatarUrl,
-            isLoading = isLoading.value
+            isLoading = isLoading.value,
+            navController = navController
         )
     }
 }
@@ -81,7 +87,8 @@ fun HomeScreen(
 @Composable
 fun SurveysPager(
     surveys: State<List<Survey>?>,
-    isLoading: Boolean
+    isLoading: Boolean,
+    navController: NavController
 ) {
     if (isLoading) {
         Box(
@@ -108,7 +115,11 @@ fun SurveysPager(
                 modifier = Modifier.fillMaxSize(),
                 state = pagerState
             ) {page ->
-                SurveyUI(survey = it[page], pagerState = pagerState)
+                SurveyPage(
+                    survey = it[page],
+                    pagerState = pagerState,
+                    navController = navController,
+                )
             }
         }
     }
@@ -117,9 +128,10 @@ fun SurveysPager(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun SurveyUI(
+fun SurveyPage(
     survey: Survey,
-    pagerState: PagerState
+    pagerState: PagerState,
+    navController: NavController
 ) {
     Box(
         modifier = Modifier
@@ -203,7 +215,9 @@ fun SurveyUI(
                         containerColor = Color.White
                     ),
                     contentPadding = PaddingValues(0.dp),
-                    onClick = { /*TODO*/ }
+                    onClick = {
+                        navController.navigate(route = NimbleRoutes.SurveyDetailScreen.route)
+                    }
                 ) {
                     Icon(
                         modifier = Modifier.size(45.dp),
@@ -220,7 +234,8 @@ fun SurveyUI(
 @Composable
 fun DayInformationAndUserAvatarSection(
     userAvatarUrl: String?,
-    isLoading: Boolean
+    isLoading: Boolean,
+    navController: NavController
 ) {
     ConstraintLayout(
         modifier = Modifier
@@ -290,7 +305,10 @@ fun DayInformationAndUserAvatarSection(
                         bottom.linkTo(parent.bottom)
                         end.linkTo(parent.end)
                     }
-                    .clip(CircleShape),
+                    .clip(CircleShape)
+                    .clickable {
+                        navController.navigate(NimbleRoutes.LogOutScreen.route)
+                    },
                 model = userAvatarUrl,
                 contentDescription = "User Profile Image"
             )
