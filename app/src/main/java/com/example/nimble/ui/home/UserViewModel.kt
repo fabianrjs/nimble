@@ -21,7 +21,7 @@ sealed class UserRequestState {
 }
 
 class UserViewModel(
-    private val userToken: UserToken,
+    val userAuthToken: UserToken,
     private val userRepository: UserRepository
 ) : ViewModel() {
 
@@ -37,10 +37,10 @@ class UserViewModel(
 
     private fun getUserInfo() {
         viewModelScope.launch {
-            userRepository.getUserInfo(userToken.getAuthorization())
+            userRepository.getUserInfo(userAuthToken.getAuthorization())
                 .flowOn(Dispatchers.IO)
                 .onStart { _userInfoState.value = UserRequestState.Loading }
-                .catch { _userInfoState.value = UserRequestState.Error }
+                .catch { handleLoginRequestError() }
                 .collect { response ->
                     if (response.isSuccessful) {
                         response.body()?.userData?.let {

@@ -1,7 +1,6 @@
 package com.example.nimble.ui.home
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,8 +22,11 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,11 +40,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import coil.compose.AsyncImage
-import coil.compose.AsyncImagePainter
-import coil.compose.rememberAsyncImagePainter
 import com.example.nimble.R
 import com.example.nimble.model.Survey
 import com.example.nimble.model.UserToken
+import com.example.ui_components.LoadingComponentCircle
+import com.example.ui_components.LoadingComponentRectangle
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.context.GlobalContext
 
@@ -53,29 +55,67 @@ fun HomeScreen(
 ) {
     val surveys = homeViewModel.surveys.collectAsState()
     val userInfo = userViewModel.userInfo.collectAsState()
+    val userInfoState = userViewModel.userInfoState.collectAsState()
+    val surveysState = homeViewModel.surveysState.collectAsState()
+
+    val isLoading = remember { mutableStateOf(true)}
+
+    if(surveys.value.isNullOrEmpty() && surveysState.value == null)
+        homeViewModel.getSurveys(userViewModel.userAuthToken)
+
+    LaunchedEffect(key1 = userInfoState.value, surveysState.value) {
+        isLoading.value =
+            userInfoState.value is UserRequestState.Loading || surveysState.value is SurveysRequestState.Loading
+    }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        SurveysPager(surveys)
-        DayInformationAndUserAvatarSection(userAvatarUrl = userInfo.value?.avatarUrl)
+        SurveysPager(
+            surveys = surveys,
+            isLoading = isLoading.value
+        )
+        DayInformationAndUserAvatarSection(
+            userAvatarUrl = userInfo.value?.avatarUrl,
+            isLoading = isLoading.value
+        )
     }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SurveysPager(
-    surveys: State<List<Survey>?>
+    surveys: State<List<Survey>?>,
+    isLoading: Boolean
 ) {
-    surveys.value?.let {
-        val pagerState = rememberPagerState{ it.size }
+    if (isLoading) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = Color.Black),
+            contentAlignment = Alignment.BottomStart
+        ) {
+            Column(
+                modifier = Modifier.padding(horizontal = 20.dp, vertical = 60.dp)
+            ) {
+                LoadingComponentRectangle(width = 50)
+                LoadingComponentRectangle(modifier = Modifier.padding(top = 18.dp),width = 253)
+                LoadingComponentRectangle(modifier = Modifier.padding(top = 10.dp),width = 130)
+                LoadingComponentRectangle(modifier = Modifier.padding(top = 18.dp),width = 318)
+                LoadingComponentRectangle(modifier = Modifier.padding(top = 10.dp), width = 200)
+            }
+        }
+    } else {
+        surveys.value?.let {
+            val pagerState = rememberPagerState{ it.size }
 
-        HorizontalPager(
-            modifier = Modifier.fillMaxSize(),
-            state = pagerState
-        ) {page ->
-            SurveyUI(survey = it[page], pagerState = pagerState)
+            HorizontalPager(
+                modifier = Modifier.fillMaxSize(),
+                state = pagerState
+            ) {page ->
+                SurveyUI(survey = it[page], pagerState = pagerState)
+            }
         }
     }
 }
@@ -185,54 +225,82 @@ fun SurveyUI(
 
 @Composable
 fun DayInformationAndUserAvatarSection(
-    userAvatarUrl: String?
+    userAvatarUrl: String?,
+    isLoading: Boolean
 ) {
     ConstraintLayout(
-        modifier = Modifier.padding(
-            top = 60.dp,
-            start = 20.dp,
-            end = 20.dp
-        )
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                top = 60.dp,
+                start = 20.dp,
+                end = 20.dp
+            )
     ) {
         val (date, day, userImage) = createRefs()
-        val userAvatarPainter = rememberAsyncImagePainter(userAvatarUrl)
-        val painter =
-            if (userAvatarPainter.state is AsyncImagePainter.State.Success) userAvatarPainter
-            else painterResource(id = R.drawable.user_default_image)
 
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .constrainAs(date) {
-                    start.linkTo(parent.start)
-                    top.linkTo(parent.top)
-                },
-            text = "MONDAY, JUNE 15",
-            fontSize = 13.sp,
-            color = Color.White
-        )
-        
-        Text(
-            modifier = Modifier
-                .constrainAs(day) {
-                    start.linkTo(parent.start)
-                    top.linkTo(date.bottom)
-                },
-            text = "Today",
-            color = Color.White,
-            fontSize = 34.sp
-        )
+        if (isLoading) {
+            LoadingComponentRectangle(
+                modifier = Modifier
+                    .constrainAs(date) {
+                        start.linkTo(parent.start)
+                        top.linkTo(parent.top)
+                    },
+                width = 120,
+            )
 
-        Image(
-            modifier = Modifier
-                .size(36.dp)
-                .constrainAs(userImage) {
-                    bottom.linkTo(parent.bottom)
-                    end.linkTo(parent.end)
-                },
-            painter = painter,
-            contentDescription = "User Profile Image"
-        )
+            LoadingComponentRectangle(
+                modifier = Modifier
+                    .constrainAs(day) {
+                        start.linkTo(parent.start)
+                        top.linkTo(date.bottom, 15.dp)
+                    },
+                width = 100,
+            )
+            LoadingComponentCircle(
+                modifier = Modifier
+                    .constrainAs(userImage) {
+                        bottom.linkTo(parent.bottom)
+                        end.linkTo(parent.end)
+                    },
+                size = 36.dp
+            )
+        } else {
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .constrainAs(date) {
+                        start.linkTo(parent.start)
+                        top.linkTo(parent.top)
+                    },
+                text = "MONDAY, JUNE 15",
+                fontSize = 13.sp,
+                color = Color.White
+            )
+
+            Text(
+                modifier = Modifier
+                    .constrainAs(day) {
+                        start.linkTo(parent.start)
+                        top.linkTo(date.bottom)
+                    },
+                text = "Today",
+                color = Color.White,
+                fontSize = 34.sp
+            )
+
+            AsyncImage(
+                modifier = Modifier
+                    .size(36.dp)
+                    .constrainAs(userImage) {
+                        bottom.linkTo(parent.bottom)
+                        end.linkTo(parent.end)
+                    }
+                    .clip(CircleShape),
+                model = userAvatarUrl,
+                contentDescription = "User Profile Image"
+            )
+        }
     }
 }
 
