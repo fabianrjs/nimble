@@ -4,6 +4,8 @@ import com.example.nimble.network.models.LoginRequest
 import com.example.nimble.network.models.UserTokenResponse
 import com.example.nimble.network.models.LogoutRequest
 import com.example.nimble.network.models.RefreshTokenRequest
+import com.example.nimble.network.models.ResetPasswordBodyRequest
+import com.example.nimble.network.models.ResetPasswordResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
@@ -18,5 +20,8 @@ interface AuthService {
 
     @POST("api/v1/oauth/token")
     suspend fun refreshToken(@Body refreshTokenRequest: RefreshTokenRequest) : Response<UserTokenResponse>
+
+    @POST("api/v1/passwords")
+    suspend fun resetPassword(@Body email: ResetPasswordBodyRequest): Response<ResetPasswordResponse>
 
 }

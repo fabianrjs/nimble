@@ -18,6 +18,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.navigation.NavController
+import com.example.nimble.NimbleRoutes
 import com.example.nimble.R
 import com.example.nimble.model.RequestState
 import com.example.ui_components.InputTextField
@@ -26,7 +28,8 @@ import com.example.ui_components.NimbleButton
 
 @Composable
 fun LogInScreen(
-    authViewModel: AuthViewModel
+    authViewModel: AuthViewModel,
+    navController: NavController
 ) {
     val emailValue = authViewModel.emailValue.collectAsState()
     val passwordValue = authViewModel.passwordValue.collectAsState()
@@ -40,8 +43,8 @@ fun LogInScreen(
             loginRequestState = loginRequestState,
             onEmailValueChange = authViewModel::onEmailValueChange,
             onPasswordValueChange = authViewModel::onPasswordValueChange,
-            onLoginButtonClick = authViewModel::login,
-        )
+            onLoginButtonClick = authViewModel::login
+        ) { navController.navigate(NimbleRoutes.ResetPasswordScreen.route) }
     }
 }
 
@@ -52,7 +55,8 @@ private fun LogInForm(
     loginRequestState: State<RequestState?>,
     onEmailValueChange: (String) -> Unit,
     onPasswordValueChange: (String) -> Unit,
-    onLoginButtonClick: () -> Unit
+    onLoginButtonClick: () -> Unit,
+    onForgotPasswordClick: () -> Unit
 ) {
     ConstraintLayout(
         modifier = Modifier.fillMaxSize()
@@ -68,7 +72,7 @@ private fun LogInForm(
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                 }
-                .padding(vertical = 109.dp),
+                .padding(vertical = 100.dp),
             painter = painterResource(id = R.drawable.nimble_logo),
             contentDescription = "Nimble Logo"
         )
@@ -105,7 +109,7 @@ private fun LogInForm(
                 Text(
                     modifier = Modifier
                         .padding(end = 12.dp)
-                        .clickable { /* TODO */ },
+                        .clickable { onForgotPasswordClick() },
                     text = "Forgot?",
                     color = Color.White.copy(alpha = 0.5f)
                 )

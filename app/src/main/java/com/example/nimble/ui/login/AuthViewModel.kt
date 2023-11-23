@@ -30,8 +30,14 @@ class AuthViewModel(
     private val _passwordValue = MutableStateFlow("")
     val passwordValue = _passwordValue.asStateFlow()
 
+    private val _emailResetPasswordValue = MutableStateFlow("")
+    val emailResetPasswordValue = _emailResetPasswordValue.asStateFlow()
+
     private val _loginRequestState = MutableStateFlow<RequestState?>(null)
     val loginRequestState = _loginRequestState.asStateFlow()
+
+    private val _resetPasswordRequestState = MutableStateFlow<RequestState?>(null)
+    val resetPasswordRequestState = _resetPasswordRequestState.asStateFlow()
 
     private val _accessToken = MutableStateFlow<String?>(null)
     val accessToken = _accessToken.asStateFlow()
@@ -63,6 +69,10 @@ class AuthViewModel(
 
     fun onPasswordValueChange(newValue: String) {
         _passwordValue.value = newValue
+    }
+
+    fun onEmailResetPasswordValueChange(newValue: String) {
+        _emailResetPasswordValue.value = newValue
     }
 
     fun login() {
@@ -100,6 +110,10 @@ class AuthViewModel(
         _loginRequestState.value = RequestState.Error
     }
 
+    private fun handleResetPasswordRequestError() {
+        _resetPasswordRequestState.value = RequestState.Error
+    }
+
     fun logout() {
         SessionManager.getUserToken()?.let { userToken ->
             viewModelScope.launch {
@@ -126,6 +140,24 @@ class AuthViewModel(
         _loginRequestState.value = null
         _emailValue.value = ""
         _passwordValue.value = ""
+    }
+
+    fun resetPassword() {
+        viewModelScope.launch {
+            authRepository.resetPassword(_emailResetPasswordValue.value)
+                .flowOn(Dispatchers.IO)
+                .onStart { _resetPasswordRequestState.value = RequestState.Loading }
+                .catch { handleResetPasswordRequestError() }
+                .collect { response ->
+                    if (response.isSuccessful) {
+                        response.body()?.meta?.message?.let { message ->
+                            _resetPasswordRequestState.value = RequestState.SuccessWithMessage(message)
+                        }
+                    } else {
+                        handleResetPasswordRequestError()
+                    }
+                }
+        }
     }
 
 }
