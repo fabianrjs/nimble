@@ -3,6 +3,7 @@ package com.example.nimble
 import android.app.Application
 import com.example.nimble.koin.appModule
 import com.example.nimble.koin.dataStoreModule
+import com.example.nimble.koin.databaseModule
 import com.example.nimble.koin.networkModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -15,7 +16,7 @@ class NimbleApplication : Application() {
         startKoin {
             androidLogger()
             androidContext(this@NimbleApplication)
-            modules(appModule, networkModule, dataStoreModule)
+            modules(appModule, networkModule, dataStoreModule, databaseModule)
         }
     }
 }

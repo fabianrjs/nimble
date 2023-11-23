@@ -2,7 +2,7 @@ package com.example.nimble.network.models
 
 import com.google.gson.annotations.SerializedName
 
-data class LoginResponse(
+data class UserTokenResponse(
     @SerializedName("data") val data: TokenData
 )
 

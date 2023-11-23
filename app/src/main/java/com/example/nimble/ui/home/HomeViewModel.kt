@@ -33,7 +33,9 @@ class HomeViewModel(
             surveysRepository.getSurveysList(authorization)
                 .flowOn(Dispatchers.IO)
                 .onStart { _surveysState.value = RequestState.Loading }
-                .catch { handleSurveysRequestError() }
+                .catch {
+                    handleSurveysRequestError()
+                }
                 .collect { response ->
                     if (response.isSuccessful) {
                         response.body()?.data?.let {

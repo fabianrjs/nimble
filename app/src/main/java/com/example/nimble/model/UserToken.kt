@@ -9,5 +9,4 @@ data class UserToken(
     val createdAt: Long
 )
 
-fun UserToken.getAuthorization() =
-    "${this.tokenType} ${this.accessToken}"
+fun UserToken.expiresAt() = createdAt + expiresIn
