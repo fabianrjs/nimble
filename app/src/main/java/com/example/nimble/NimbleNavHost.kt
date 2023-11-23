@@ -11,6 +11,7 @@ import com.example.nimble.ui.SplashScreen
 import com.example.nimble.ui.home.HomeScreen
 import com.example.nimble.ui.login.AuthViewModel
 import com.example.nimble.ui.login.LogOutScreen
+import com.example.nimble.ui.resetpassword.ResetPasswordScreen
 import com.example.nimble.ui.survey.SurveyDetailScreen
 import org.koin.androidx.compose.koinViewModel
 
@@ -20,6 +21,7 @@ sealed class NimbleRoutes(val route: String) {
     object HomeScreen : NimbleRoutes("HomeScreen")
     object SurveyDetailScreen : NimbleRoutes("SurveyDetailScreen")
     object LogOutScreen : NimbleRoutes("LogOutScreen")
+    object ResetPasswordScreen : NimbleRoutes("ForgotPasswordScreen")
 }
 
 @Composable
@@ -52,11 +54,14 @@ fun NimbleNavHost(
                 navController.navigate(NimbleRoutes.LogInScreen.route)
             }
         }
-        composable(route = NimbleRoutes.LogInScreen.route) { LogInScreen(authViewModel) }
+        composable(route = NimbleRoutes.LogInScreen.route) { LogInScreen(authViewModel, navController) }
         composable(route = NimbleRoutes.HomeScreen.route) {
             HomeScreen(navController = navController)
         }
         composable(route = NimbleRoutes.SurveyDetailScreen.route) { SurveyDetailScreen() }
         composable(route = NimbleRoutes.LogOutScreen.route) { LogOutScreen(authViewModel) }
+        composable(route = NimbleRoutes.ResetPasswordScreen.route) {
+            ResetPasswordScreen(authViewModel, navController)
+        }
     }
 }
