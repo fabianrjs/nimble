@@ -2,9 +2,12 @@ package com.example.nimble.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.nimble.database.repositories.SurveysDatabaseRepository
 import com.example.nimble.model.RequestState
 import com.example.nimble.model.Survey
+import com.example.nimble.network.SessionManager
 import com.example.nimble.network.repositories.SurveysRepository
+import com.example.nimble.utils.getAuthorization
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,10 +15,11 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class HomeViewModel(
-    private val authorization: String,
-    private val surveysRepository: SurveysRepository
+    private val surveysRepository: SurveysRepository,
+    private val surveysDatabaseRepository: SurveysDatabaseRepository
 ) : ViewModel() {
 
     private val _surveys = MutableStateFlow<List<Survey>?>(null)
@@ -30,7 +34,7 @@ class HomeViewModel(
 
     private fun getSurveys() {
         viewModelScope.launch {
-            surveysRepository.getSurveysList(authorization)
+            surveysRepository.getSurveysList(SessionManager.getAccessToken().getAuthorization())
                 .flowOn(Dispatchers.IO)
                 .onStart { _surveysState.value = RequestState.Loading }
                 .catch {
@@ -47,6 +51,9 @@ class HomeViewModel(
                                     description = surveyData.attributes.description,
                                     coverImageUrl = surveyData.attributes.coverImageUrl
                                 )
+                            }
+                            withContext(Dispatchers.IO) {
+                                surveysDatabaseRepository.saveSurveys(_surveys.value!!)
                             }
                         }
                     } else {

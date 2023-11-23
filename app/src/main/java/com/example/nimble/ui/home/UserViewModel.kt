@@ -4,7 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.nimble.model.RequestState
 import com.example.nimble.model.User
+import com.example.nimble.network.SessionManager
 import com.example.nimble.network.repositories.UserRepository
+import com.example.nimble.utils.getAuthorization
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,7 +16,6 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
 class UserViewModel(
-    private val authorization: String,
     private val userRepository: UserRepository
 ) : ViewModel() {
 
@@ -30,7 +31,7 @@ class UserViewModel(
 
     private fun getUserInfo() {
         viewModelScope.launch {
-            userRepository.getUserInfo(authorization)
+            userRepository.getUserInfo(SessionManager.getAccessToken().getAuthorization())
                 .flowOn(Dispatchers.IO)
                 .onStart { _userInfoState.value = RequestState.Loading }
                 .catch { handleLoginRequestError() }

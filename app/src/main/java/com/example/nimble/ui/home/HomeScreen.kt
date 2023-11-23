@@ -47,11 +47,12 @@ import com.example.nimble.model.RequestState
 import com.example.nimble.model.Survey
 import com.example.ui_components.LoadingComponentCircle
 import com.example.ui_components.LoadingComponentRectangle
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun HomeScreen(
-    homeViewModel: HomeViewModel,
-    userViewModel: UserViewModel,
+    homeViewModel: HomeViewModel = koinViewModel(),
+    userViewModel: UserViewModel = koinViewModel(),
     navController: NavController
 ) {
     val surveys = homeViewModel.surveys.collectAsState()

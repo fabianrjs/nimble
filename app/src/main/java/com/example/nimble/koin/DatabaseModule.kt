@@ -4,6 +4,7 @@ import androidx.room.Room
 import com.example.nimble.database.NIMBLE_DATABASE_NAME
 import com.example.nimble.database.NimbleDatabase
 import com.example.nimble.database.repositories.AuthDatabaseRepository
+import com.example.nimble.database.repositories.SurveysDatabaseRepository
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
@@ -17,6 +18,7 @@ val databaseModule = module {
         ).build()
     }
 
-     single { AuthDatabaseRepository(get<NimbleDatabase>().userTokenDao()) }
+    single { AuthDatabaseRepository(get<NimbleDatabase>().userTokenDao()) }
+    single { SurveysDatabaseRepository(get<NimbleDatabase>().surveyDao()) }
 
 }
