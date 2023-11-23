@@ -12,9 +12,7 @@ import com.example.nimble.ui.home.HomeScreen
 import com.example.nimble.ui.login.AuthViewModel
 import com.example.nimble.ui.login.LogOutScreen
 import com.example.nimble.ui.survey.SurveyDetailScreen
-import com.example.nimble.utils.getAuthorization
 import org.koin.androidx.compose.koinViewModel
-import org.koin.core.parameter.parametersOf
 
 sealed class NimbleRoutes(val route: String) {
     object SplashScreen : NimbleRoutes("SplashScreen")
@@ -56,15 +54,7 @@ fun NimbleNavHost(
         }
         composable(route = NimbleRoutes.LogInScreen.route) { LogInScreen(authViewModel) }
         composable(route = NimbleRoutes.HomeScreen.route) {
-            HomeScreen(
-                userViewModel = koinViewModel(parameters = {
-                    parametersOf(accessToken.value?.getAuthorization() ?: "")
-                }),
-                homeViewModel = koinViewModel(parameters = {
-                    parametersOf(accessToken.value?.getAuthorization() ?: "")
-                }),
-                navController = navController
-            )
+            HomeScreen(navController = navController)
         }
         composable(route = NimbleRoutes.SurveyDetailScreen.route) { SurveyDetailScreen() }
         composable(route = NimbleRoutes.LogOutScreen.route) { LogOutScreen(authViewModel) }

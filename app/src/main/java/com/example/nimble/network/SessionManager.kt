@@ -45,4 +45,6 @@ object SessionManager : KoinComponent {
         return userToken?.accessToken ?: ""
     }
 
+    fun getAccessToken() = userToken?.accessToken ?: ""
+
 }
