@@ -35,7 +35,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -47,6 +46,8 @@ import com.example.nimble.model.RequestState
 import com.example.nimble.model.Survey
 import com.example.ui_components.LoadingComponentCircle
 import com.example.ui_components.LoadingComponentRectangle
+import com.example.ui_components.theme.neuzeitDBook
+import com.example.ui_components.theme.neuzeitDBookHeavy
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -190,7 +191,7 @@ fun SurveyPage(
                 maxLines = 2,
                 fontSize = 28.sp,
                 color = Color.White,
-                fontWeight = FontWeight.W800,
+                fontFamily = neuzeitDBookHeavy
             )
             Row(
                 modifier = Modifier
@@ -206,7 +207,7 @@ fun SurveyPage(
                     maxLines = 2,
                     fontSize = 17.sp,
                     color = Color.White,
-                    fontWeight = FontWeight.W400,
+                    fontFamily = neuzeitDBook
                 )
 
                 Button(
@@ -285,7 +286,8 @@ fun DayInformationAndUserAvatarSection(
                     },
                 text = "MONDAY, JUNE 15",
                 fontSize = 13.sp,
-                color = Color.White
+                color = Color.White,
+                fontFamily = neuzeitDBookHeavy
             )
 
             Text(
@@ -296,7 +298,8 @@ fun DayInformationAndUserAvatarSection(
                     },
                 text = "Today",
                 color = Color.White,
-                fontSize = 34.sp
+                fontSize = 34.sp,
+                fontFamily = neuzeitDBookHeavy
             )
 
             AsyncImage(

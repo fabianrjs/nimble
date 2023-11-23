@@ -28,6 +28,7 @@ import com.example.nimble.ui.login.AuthViewModel
 import com.example.ui_components.InputTextField
 import com.example.ui_components.NimbleBackgroundImage
 import com.example.ui_components.NimbleButton
+import com.example.ui_components.theme.neuzeitDBook
 
 @Composable
 fun ResetPasswordScreen(
@@ -79,7 +80,8 @@ fun ResetPasswordScreen(
                 text = stringResource(R.string.instructions_reset_password_screen),
                 textAlign = TextAlign.Center,
                 fontSize = 17.sp,
-                color = Color.White
+                color = Color.White,
+                fontFamily = neuzeitDBook
             )
 
             InputTextField(

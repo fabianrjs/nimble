@@ -25,6 +25,7 @@ import com.example.nimble.model.RequestState
 import com.example.ui_components.InputTextField
 import com.example.ui_components.NimbleBackgroundImage
 import com.example.ui_components.NimbleButton
+import com.example.ui_components.theme.neuzeitDBook
 
 @Composable
 fun LogInScreen(
@@ -111,7 +112,8 @@ private fun LogInForm(
                         .padding(end = 12.dp)
                         .clickable { onForgotPasswordClick() },
                     text = "Forgot?",
-                    color = Color.White.copy(alpha = 0.5f)
+                    color = Color.White.copy(alpha = 0.5f),
+                    fontFamily = neuzeitDBook
                 )
             },
             enabled = formEnabled

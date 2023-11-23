@@ -26,6 +26,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.ui_components.theme.neuzeitDBook
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,7 +50,13 @@ fun InputTextField(
             .fillMaxWidth()
             .height(56.dp),
         textStyle = TextStyle(fontSize = 17.sp),
-        placeholder = { Text(placeholderText) },
+        placeholder = {
+            Text(
+                text = placeholderText,
+                fontFamily = neuzeitDBook,
+                fontSize = 17.sp
+            )
+        },
         keyboardOptions = KeyboardOptions.Default.copy(
             imeAction = imeAction,
             keyboardType = keyboardType

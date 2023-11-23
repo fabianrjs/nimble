@@ -2,9 +2,11 @@ package com.example.ui_components.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.example.ui_components.R
 
 // Set of Material typography styles to start with
 val Typography = Typography(
@@ -32,3 +34,6 @@ val Typography = Typography(
     )
     */
 )
+
+val neuzeitDBook = FontFamily(Font(R.font.neuzeit_s_book))
+val neuzeitDBookHeavy = FontFamily(Font(R.font.neuzeit_s_bookheavy))

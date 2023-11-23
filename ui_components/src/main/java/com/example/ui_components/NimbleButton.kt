@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.ui_components.theme.neuzeitDBookHeavy
 
 @Composable
 fun NimbleButton(
@@ -40,6 +41,7 @@ fun NimbleButton(
             Text(
                 text = textButton,
                 fontSize = 17.sp,
+                fontFamily = neuzeitDBookHeavy
             )
         }
     }
