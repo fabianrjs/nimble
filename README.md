@@ -1,4 +1,4 @@
-# nimble
+# Nimble
 Technical Test for Android developer at MBC
 
 # Demo Video
