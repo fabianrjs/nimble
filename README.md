@@ -1,5 +1,4 @@
 # Nimble
-Technical Test for Android developer at MBC
 
 # Demo Video
 https://drive.google.com/file/d/1MDCsbehqkXHJ3B1XeEK-2xmq8L9_ZL1x/view?usp=sharing
